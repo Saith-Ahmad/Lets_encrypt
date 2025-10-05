@@ -16,7 +16,7 @@ export default function Footer() {
           {/* Logo & About */}
           <div>
             <img src={'/assets/logo1.png'} alt="logo" className="w-32 my-4"/>
-            <h2 className="text-2xl font-bold text-accent">Boiler Inspection & Services</h2>
+            <h2 className="text-xl font-bold text-accent">Boiler Inspection <br/> Services Company</h2>
             <p className="mt-3 text-sm text-white/80">
               Your trusted partner for comprehensive boiler inspections, ensuring safety, compliance, and operational excellence for your business.
             </p>
@@ -41,12 +41,12 @@ export default function Footer() {
            
             <h3 className="text-lg font-semibold mb-4">Get in Touch</h3>
             <div className="flex flex-col gap-2">
-              <p className="flex items-center gap-2">
-                <Phone size={18} className="text-accent" /> +92 300 1234567
-              </p>
-              <p className="flex items-center gap-2">
-                <Mail size={18} className="text-accent" /> amjad@inspectorofboilers.com
-              </p>
+              <a href="https://wa.link/ojg67j" target="_blank" className="flex items-center gap-2">
+                <Phone size={18} className="text-accent" /> +92 324-4281854
+              </a>
+              <a href="mailto:info@boilerinspectionservices.com" className="flex items-center gap-2">
+                <Mail size={18} className="text-accent" /> info@boilerinspectionservices.com
+              </a>
             </div>
           </div>
         </div>
@@ -56,7 +56,7 @@ export default function Footer() {
           {/* Removed Contact Info from here as it's now in the main section */}
           {/* Social Icons */}
           <div className="flex gap-4 justify-center items-center w-full">
-            <a href="#" className="hover:text-accent transition"><Facebook /></a>
+            <a href="https://www.facebook.com/share/19vJXzEyQk/" target="_blank" className="hover:text-accent transition"><Facebook /></a>
             <a href="#" className="hover:text-accent transition"><Twitter /></a>
             <a href="#" className="hover:text-accent transition"><Instagram /></a>
             <a href="#" className="hover:text-accent transition"><Linkedin /></a>

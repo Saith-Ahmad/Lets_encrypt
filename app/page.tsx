@@ -1,3 +1,4 @@
+import CEOMessage from '@/componnets/CEOMessage'
 import CTASection from '@/componnets/CTAsection'
 import Hero from '@/componnets/Hero'
 import Safety from '@/componnets/Safety'
@@ -12,6 +13,7 @@ export default function page() {
       <Hero/>
       <Services/>
       <Safety/>
+      <CEOMessage/>
       <VisionMission/>
       <TestimonialsSection/>
       <CTASection/>

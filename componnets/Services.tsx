@@ -32,6 +32,22 @@ const services = [
     desc: "Non-destructive testing (NDT) management, analysis, and optimization services.",
     img: "/assets/service6.png",
   },
+  {
+    title: "Boiler Chemicals",
+    desc: "Essential chemicals designed to optimize boiler performance and prevent corrosion.",
+    img: "/assets/service7.png",
+  },
+  {
+    title: "Steam Boiler Chemicals",
+    desc: "Includes oxygen scavengers, amines, phosphates, and alkalinity builders to protect and treat steam boilers.",
+    img: "/assets/service8.png",
+  },
+  {
+    title: "Hot Water Boiler Chemicals",
+    desc: "Sodium nitrite-based blends for efficient hot water boiler treatment and corrosion prevention.",
+    img: "/assets/service9.png",
+  },
+
 ];
 
 export default function Services() {

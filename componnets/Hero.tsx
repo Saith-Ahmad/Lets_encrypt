@@ -54,15 +54,15 @@ export default function Hero() {
         initial={{y: -60, opacity : 0}}
         whileInView={{y:0, opacity : 1}}
         transition={{duration : 1}}
-        className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4">
-          Boiler Inspector Services
+        className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4">
+          Boiler Inspector Services Company
         </motion.h1>
         <p className="max-w-2xl text-base md:text-lg mb-6">
           Ensuring safety, quality, and compliance in industrial boiler and
           pressure systems with expert inspections and certifications.
         </p>
         <a
-          href="#contact"
+          href="https://wa.link/ojg67j" target="_blank"
           className="bg-accent hover:bg-accent-hover text-black px-6 py-2 rounded-sm font-medium transition"
         >
           Get in Touch

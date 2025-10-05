@@ -177,12 +177,12 @@ export default function Header() {
 
             {/* CTA */}
             <motion.div variants={item}>
-              <a href="#contact" onClick={(e) => handleScrollTo(e, "#contact")}>
+              <a href="https://wa.link/ojg67j" target="_blank" >
                 <Button
                   size={"lg"}
                   className={`${isScrolled ? "bg-primary" : "bg-accent text-primary hover:text-white"} hidden md:block rounded-full px-10 hover:bg-primary-hover`}
                 >
-                  Get in Touch
+                  Request a Quote
                 </Button>
               </a>
             </motion.div>
@@ -230,9 +230,9 @@ export default function Header() {
                     </nav>
 
                     {/* CTA */}
-                    <a href="#contact" onClick={(e) => handleMobileLinkClick(e, "#contact")}>
+                    <a href="https://wa.link/ojg67j" target="_blank" >
                       <Button className="w-full rounded-full bg-primary hover:bg-primary-hover">
-                        Get in Touch
+                        Request a Quote
                       </Button>
                     </a>
                   </div>
