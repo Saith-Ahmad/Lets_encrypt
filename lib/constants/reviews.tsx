@@ -3,7 +3,7 @@ export const reviews = [
     name: "Aamir Khan",
     username: "CEO, DG Khan Cement Co.",
     img: "/assets/user.png",
-    body: "Boiler Inspection Services provided a thorough review, ensuring we met all safety standards.",
+    body: "Boiler inspection and services pvt. ltd. provided a thorough review, ensuring we met all safety standards.",
   },
   {
     name: "Tariq Usman",
@@ -39,6 +39,6 @@ export const reviews = [
     name: "Sajjad Qureshi",
     username: "Director, Crescent Textile Mills",
     img: "/assets/user.png",
-    body: "Boiler Inspection Services’ team is highly professional. We're confident in our systems' safety and compliance after their work.",
+    body: "Boiler inspection and services pvt ltd, is highly professional. We're confident in our systems' safety and compliance after their work.",
   },
 ];

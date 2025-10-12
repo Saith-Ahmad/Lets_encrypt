@@ -6,6 +6,7 @@ import Services from '@/componnets/Services'
 import ChemicalServices from '@/componnets/ChemicalServices'
 import CoalSupply from '@/componnets/CoalSupply'
 import TestimonialsSection from '@/componnets/Testimonials'
+import ContactUs from '@/componnets/ContactUs'
 import VisionMission from '@/componnets/VisionMission'
 import React from 'react'
 
@@ -21,6 +22,7 @@ export default function page() {
       <VisionMission/>
       <TestimonialsSection/>
       <CTASection/>
+      <ContactUs/>
     </div>
   )
 }

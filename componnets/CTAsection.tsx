@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function CTASection() {
   return (
-    <section className="w-full flex justify-center py-16 px-3 bg-white" id="contact">
+    <section className="w-full flex justify-center py-16 px-3 bg-gray-50" id="contact">
       <div className="max-w-6xl w-full bg-primary text-white rounded-2xl shadow-lg  p-7 md:p-10 grid md:grid-cols-2 items-center gap-8">
         {/* Left Content */}
         <div className="space-y-6">

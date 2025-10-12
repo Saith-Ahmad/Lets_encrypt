@@ -46,7 +46,7 @@ export default function Services() {
           </TextAnimate>
           <img src="/assets/arrow.png" alt="Decorative arrow" className="w-[250px] text-center mx-auto mb-2" />
           <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-            Boiler Services and Inspection, LLC provides a wide range of
+            Boiler inspection and services private limited, provides a wide range of
             professional inspection, quality assurance, and outage management
             services for the industrial and power sector.
           </p>
