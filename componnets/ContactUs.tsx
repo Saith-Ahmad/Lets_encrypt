@@ -86,10 +86,10 @@ export default function ContactUs() {
             <div className="group p-6 shadow-md rounded-xl col-span-1 bg-white border border-gray-200 md:col-span-2 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
               <div className="flex items-center gap-4 mb-3">
                 <MapPin size={30} className="text-primary group-hover:text-accent transition-colors" />
-                <h3 className="font-semibold text-lg">Our Office</h3>
+                <h3 className="font-semibold text-lg">Our Address</h3>
               </div>
               <p className="text-gray-600 text-sm mb-2">
-                Visit our office for consultations or in-person meetings. We
+                Visit our location for consultations or in-person meetings. We
                 welcome all industrial clients.
               </p>
               <p className="font-medium text-primary group-hover:text-accent">
