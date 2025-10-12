@@ -11,7 +11,7 @@ const coalImages = [
 
 export default function CoalSupply() {
   return (
-    <section className="py-5 md:py-20 bg-gray-50" id="coal-supply">
+    <section className="py-5 md:py-20 bg-gray-50 overflow-hidden" id="coal-supply">
       {/* 👇 Use flex-col-reverse on mobile, grid on md+ */}
       <div className="max-w-6xl mx-auto px-6 flex flex-col-reverse md:grid md:grid-cols-2 gap-12 items-center">
         {/* LEFT SIDE - DIAMOND GALLERY */}

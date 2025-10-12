@@ -27,7 +27,7 @@ const chemicalServices = [
 
 export default function ChemicalServices() {
   return (
-    <section className="py-20 bg-white" id="chemical-services">
+    <section className="py-20 bg-white overflow-hidden" id="chemical-services">
       <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
         {/* LEFT SIDE - TEXT */}
         <div>
