@@ -55,7 +55,7 @@ export default function Hero() {
         whileInView={{y:0, opacity : 1}}
         transition={{duration : 1}}
         className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4">
-          Boiler Inspector Services Company
+          Boiler Inspection Services Company
         </motion.h1>
         <p className="max-w-2xl text-base md:text-lg mb-6">
           Ensuring safety, quality, and compliance in industrial boiler and
