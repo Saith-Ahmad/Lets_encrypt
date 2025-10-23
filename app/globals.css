@@ -286,3 +286,8 @@ html {
     @apply bg-background text-foreground;
   }
 }
+
+
+.cl-internal-1dauvpw, .cl-internal-l2l775{
+  display: none !important;
+}

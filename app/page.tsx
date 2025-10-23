@@ -1,28 +1,21 @@
-import CEOMessage from '@/componnets/CEOMessage'
-import CTASection from '@/componnets/CTAsection'
-import Hero from '@/componnets/Hero'
-import Safety from '@/componnets/Safety'
-import Services from '@/componnets/Services'
-import ChemicalServices from '@/componnets/ChemicalServices'
-import CoalSupply from '@/componnets/CoalSupply'
-import TestimonialsSection from '@/componnets/Testimonials'
-import ContactUs from '@/componnets/ContactUs'
-import VisionMission from '@/componnets/VisionMission'
+
+import Hero from '@/components/pages/home/Hero'
+import VisionMission from '@/components/pages/home/VisionMission'
 import React from 'react'
+import WhyChooseUs from '@/components/pages/home/WhyChoose'
+import EncryptionFeatures from '@/components/pages/home/EncryptionFeatures'
+import HowItWorks from '@/components/pages/home/HowItWorks'
+import GetStarted from '@/components/pages/home/FreeTrial'
 
 export default function page() {
   return (
     <div className=''>
       <Hero/>
-      <Services/>
-      <ChemicalServices />
-      <CoalSupply/>
-      <Safety/>
-      <CEOMessage/>
+      <WhyChooseUs/>
+      <EncryptionFeatures />
+      <HowItWorks/>
       <VisionMission/>
-      <TestimonialsSection/>
-      <CTASection/>
-      <ContactUs/>
+      <GetStarted/>
     </div>
   )
 }
