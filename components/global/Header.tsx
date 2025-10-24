@@ -160,7 +160,7 @@ export default function Header() {
                     className={`hover:bg-transparent ${
                       !isScrolled
                         ? "hidden md:flex text-accent bg-transparent border-accent hover:scale-105 font-normal text-sm md:px-6"
-                        : "bg-transparent border-black text-primary hover:scale-105"
+                        : "hidden md:flex bg-transparent border-black text-primary hover:scale-105"
                     }`}
                   >
                     Let's get you encrypted!
@@ -177,7 +177,7 @@ export default function Header() {
                       className={`${
                         !isScrolled
                           ? "bg-accent text-primary"
-                          : "bg-transparent text-white hover:bg-accent"
+                          : "bg-accent text-primary"
                       }`}
                     >
                       <Menu size={30} />
