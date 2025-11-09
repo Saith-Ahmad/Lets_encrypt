@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import crypto from "crypto";
+import { randomBytes, createCipheriv, scryptSync } from "crypto";
 
 export async function POST(req: Request) {
   try {
@@ -8,27 +8,27 @@ export async function POST(req: Request) {
     const key = formData.get("key") as string;
 
     if (!file || !key) {
-      return NextResponse.json({ error: "File and key required" }, { status: 400 });
+      return NextResponse.json({ error: "File and key are required" }, { status: 400 });
     }
 
-    // Read file as binary
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Derive encryption key
-    const hashedKey = crypto.createHash("sha256").update(key).digest();
-    const iv = crypto.randomBytes(16);
-    const cipher = crypto.createCipheriv("aes-256-cbc", hashedKey, iv);
+    const salt = randomBytes(16);
+    const iv = randomBytes(16);
 
-    // Encrypt
+    const derivedKey = scryptSync(key, salt, 32);
+
+    const cipher = createCipheriv("aes-256-cbc", derivedKey, iv);
     const encrypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
 
-    // Return as Base64 with IV prepended
-    const result = Buffer.concat([iv, encrypted]).toString("base64");
+    const finalBuffer = Buffer.concat([salt, iv, encrypted]);
 
-    return NextResponse.json({ encrypted: result });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Encryption failed" }, { status: 500 });
+    console.log(" salt", salt.length, "iv", iv.length, "enc", encrypted.length);
+
+    // Return Base64
+    return NextResponse.json({ encrypted: finalBuffer.toString("base64") });
+  } catch (err: any) {
+    console.error("Encryption error:", err);
+    return NextResponse.json({ error: err.message || "Encryption failed" }, { status: 500 });
   }
 }

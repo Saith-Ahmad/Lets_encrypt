@@ -1,28 +1,34 @@
 import { NextResponse } from "next/server";
-import crypto from "crypto";
+import { createDecipheriv, scryptSync } from "crypto";
 
 export async function POST(req: Request) {
   try {
-    const { encrypted, key } = await req.json();
+    const formData = await req.formData();
+    const file = formData.get("file") as File;
+    const key = formData.get("key") as string;
 
-    if (!encrypted || !key) {
-      return NextResponse.json({ error: "Encrypted data and key required" }, { status: 400 });
+    if (!file || !key) {
+      return NextResponse.json({ error: "File and key are required" }, { status: 400 });
     }
 
-    const encryptedBuffer = Buffer.from(encrypted, "base64");
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-    const iv = encryptedBuffer.subarray(0, 16);
-    const data = encryptedBuffer.subarray(16);
+    if (buffer.length < 32) throw new Error("Corrupted file!");
 
-    const hashedKey = crypto.createHash("sha256").update(key).digest();
-    const decipher = crypto.createDecipheriv("aes-256-cbc", hashedKey, iv);
+    const salt = buffer.subarray(0, 16);
+    const iv = buffer.subarray(16, 32);
+    const encryptedData = buffer.subarray(32);
 
-    const decrypted = Buffer.concat([decipher.update(data), decipher.final()]);
+    const derivedKey = scryptSync(key, salt, 32);
+    const decipher = createDecipheriv("aes-256-cbc", derivedKey, iv);
+    const decrypted = Buffer.concat([decipher.update(encryptedData), decipher.final()]);
 
-    // Return as Base64 for safe transmission
-    return NextResponse.json({ decrypted: decrypted.toString("base64") });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Decryption failed" }, { status: 500 });
+    return new NextResponse(decrypted, {
+      status: 200,
+      headers: { "Content-Type": "application/octet-stream" },
+    });
+  } catch (err: any) {
+    console.error("Decryption error:", err);
+    return NextResponse.json({ error: err.message || "Decryption failed" }, { status: 500 });
   }
 }

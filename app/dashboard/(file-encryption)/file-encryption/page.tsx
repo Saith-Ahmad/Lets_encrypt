@@ -14,7 +14,6 @@ export default function FileEncryptionPage() {
   const [loading, setLoading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
-  // 🔐 Auto-generate random key (16 chars)
   const handleAutoGenerate = () => {
     const randomKey = Array.from(crypto.getRandomValues(new Uint8Array(8)))
       .map((b) => b.toString(16).padStart(2, "0"))
@@ -23,7 +22,6 @@ export default function FileEncryptionPage() {
     toast.success("Auto-generated secure key!");
   };
 
-  // 📁 Handle file upload validation
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (!selected) return;
@@ -50,7 +48,6 @@ export default function FileEncryptionPage() {
     toast.success("File selected successfully!");
   };
 
-  // 🔥 Encrypt function
   const handleEncrypt = async () => {
     if (!file) return toast.error("Please upload a file!");
     if (!key.trim()) return toast.error("Please provide an encryption key!");
@@ -71,8 +68,8 @@ export default function FileEncryptionPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Encryption failed");
 
-      // Convert encrypted data into blob
-      const blob = new Blob([data.encrypted], { type: "text/plain" });
+      const binary = Uint8Array.from(atob(data.encrypted), (c) => c.charCodeAt(0));
+      const blob = new Blob([binary], { type: "application/octet-stream" });
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
 
@@ -84,7 +81,6 @@ export default function FileEncryptionPage() {
     }
   };
 
-  // 📥 Download file
   const handleDownload = () => {
     if (!downloadUrl || !file) return;
     const link = document.createElement("a");
@@ -104,7 +100,6 @@ export default function FileEncryptionPage() {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* File Upload */}
           <div>
             <label className="text-sm text-gray-400 mb-2 block">
               Upload file (only .txt, .doc, .docx, .pdf under 1MB)
@@ -117,7 +112,6 @@ export default function FileEncryptionPage() {
             />
           </div>
 
-          {/* File Preview */}
           {file && (
             <div className="flex max-w-[300px] items-center gap-3 p-4 bg-[#0f172a] rounded-lg border border-gray-700">
               <FileIcon className="w-12 h-12 text-yellow-400" />
@@ -130,7 +124,6 @@ export default function FileEncryptionPage() {
             </div>
           )}
 
-          {/* Key input + Auto-generate */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1">
               <label className="text-sm text-gray-400 mb-2 block">
@@ -152,7 +145,6 @@ export default function FileEncryptionPage() {
             </Button>
           </div>
 
-          {/* Encrypt Button */}
           <Button
             onClick={handleEncrypt}
             disabled={loading}
@@ -170,7 +162,6 @@ export default function FileEncryptionPage() {
             )}
           </Button>
 
-          {/* Download Button */}
           {downloadUrl && (
             <Button
               onClick={handleDownload}

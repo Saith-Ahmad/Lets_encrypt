@@ -14,7 +14,6 @@ export default function FileDecryptionPage() {
   const [loading, setLoading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
-  // 📁 File selection and validation
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (!selected) return;
@@ -35,45 +34,47 @@ export default function FileDecryptionPage() {
     toast.success("Encrypted file selected!");
   };
 
-  // 🔓 Decrypt function
-  const handleDecrypt = async () => {
-    if (!file) return toast.error("Please upload an encrypted file!");
-    if (!key.trim()) return toast.error("Please enter your decryption key!");
-    if (key.trim().length < 8)
-      return toast.error("Key must be at least 8 characters long!");
+const handleDecrypt = async () => {
+  if (!file) return toast.error("Please upload an encrypted file!");
+  if (!key.trim()) return toast.error("Please enter your decryption key!");
+  if (key.trim().length < 8)
+    return toast.error("Key must be at least 8 characters long!");
 
-    setLoading(true);
-    try {
-      const fileText = await file.text();
+  setLoading(true);
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("key", key);
 
-      const res = await fetch("/api/file/decrypt", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ encrypted: fileText, key }),
-      });
+    const res = await fetch("/api/file/decrypt", {
+      method: "POST",
+      body: formData,
+    });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Decryption failed!");
-
-      // Convert decrypted content into downloadable blob
-      const blob = new Blob([data.decrypted], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      setDownloadUrl(url);
-
-      toast.success("File decrypted successfully!");
-    } catch (err: any) {
-      toast.error(err.message || "Error decrypting file");
-    } finally {
-      setLoading(false);
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.error || "Decryption failed!");
     }
-  };
 
-  // 📥 Manual Download
+    const decryptedBlob = await res.blob();
+    const url = URL.createObjectURL(decryptedBlob);
+    setDownloadUrl(url);
+
+    toast.success("File decrypted successfully!");
+  } catch (err: any) {
+    toast.error(err.message || "Error decrypting file");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
   const handleDownload = () => {
     if (!downloadUrl || !file) return;
     const link = document.createElement("a");
     link.href = downloadUrl;
-    link.download = file.name.replace(".enc.txt", "_decrypted.txt");
+    link.download = file.name.replace(".enc.txt", "_decrypted");
     link.click();
     toast.success("File downloaded!");
   };
@@ -102,7 +103,6 @@ export default function FileDecryptionPage() {
             />
           </div>
 
-          {/* File Preview */}
           {file && (
             <div className="flex max-w-[300px] items-center gap-3 p-4 bg-[#0f172a] rounded-lg border border-gray-700">
               <FileIcon className="w-12 h-12 text-yellow-400" />
@@ -115,7 +115,6 @@ export default function FileDecryptionPage() {
             </div>
           )}
 
-          {/* Key Input */}
           <div>
             <label className="text-sm text-gray-400 mb-2 block">
               Decryption Key
@@ -129,7 +128,6 @@ export default function FileDecryptionPage() {
             />
           </div>
 
-          {/* Decrypt Button */}
           <Button
             onClick={handleDecrypt}
             disabled={loading}
@@ -149,7 +147,6 @@ export default function FileDecryptionPage() {
             )}
           </Button>
 
-          {/* Download Button (After Decryption) */}
           {downloadUrl && (
             <Button
               onClick={handleDownload}
