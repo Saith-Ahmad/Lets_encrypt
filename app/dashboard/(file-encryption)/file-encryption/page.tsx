@@ -1,178 +1,204 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { FileIcon, Lock, KeyRound, Loader2, Download } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Lock } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
+import EncryptActions from "@/components/pages/fileencryption/EncryptActions";
+import FileUpload from "@/components/pages/fileencryption/FileUpload";
+import KeyInput from "@/components/pages/fileencryption/KeyInput";
+import UsersList from "@/components/pages/fileencryption/UsersList";
+
 
 export default function FileEncryptionPage() {
-  const [file, setFile] = useState<File | null>(null);
-  const [key, setKey] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+    const { user } = useUser();
+    const [file, setFile] = useState<File | null>(null);
+    const [fileId, setFileId] = useState<string | null>(null);
+const [sendingUserId, setSendingUserId] = useState<string | null>(null);
+    const [key, setKey] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+    const [allowedUsers, setAllowedUsers] = useState<string[]>([]);
+    const [allUsers, setAllUsers] = useState<UserType[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
 
-  const handleAutoGenerate = () => {
-    const randomKey = Array.from(crypto.getRandomValues(new Uint8Array(8)))
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-    setKey(randomKey);
-    toast.success("Auto-generated secure key!");
-  };
+    type UserType = {
+        userId: string;
+        name: string;
+        image: string;
+    };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (!selected) return;
+    if (!user) return null;
 
-    const allowedTypes = [
-      "text/plain",
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
+    // Fetch all users
+    useEffect(() => {
+        async function fetchUsers() {
+            try {
+                const res = await fetch("/api/users");
+                const data = await res.json();
+                if (res.ok) setAllUsers(data);
+                // console.log("Fetched users:", allUsers);
+            } catch (err) {
+                console.error("Failed to fetch users", err);
+            }
+        }
+        fetchUsers();
+    }, []);
 
-    if (!allowedTypes.includes(selected.type)) {
-      toast.error("Only .txt, .doc, .docx, or .pdf files are allowed!");
-      return;
-    }
+    // Auto-generate key
+    const handleAutoGenerate = () => {
+        const randomKey = Array.from(crypto.getRandomValues(new Uint8Array(8)))
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("");
+        setKey(randomKey);
+        toast.success("Auto-generated secure key!");
+    };
 
-    if (selected.size > 1024 * 1024) {
-      toast.error("File size must be less than 1MB!");
-      return;
-    }
+    // Encrypt file
+    const handleEncrypt = async () => {
+        if (!file) return toast.error("Please upload a file!");
+        if (!key.trim()) return toast.error("Please provide an encryption key!");
+        if (key.trim().length < 8) return toast.error("Key must be at least 8 characters long!");
 
-    setFile(selected);
-    setDownloadUrl(null);
-    toast.success("File selected successfully!");
-  };
+        setLoading(true);
 
-  const handleEncrypt = async () => {
-    if (!file) return toast.error("Please upload a file!");
-    if (!key.trim()) return toast.error("Please provide an encryption key!");
-    if (key.trim().length < 8)
-      return toast.error("Key must be at least 8 characters long!");
+        try {
+            console.log("🔹 Step 1: Encrypting file...");
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("key", key);
 
-    setLoading(true);
+            const res = await fetch("/api/file/encrypt", { method: "POST", body: formData });
+            const data = await res.json();
+
+            console.log("🔹 Encryption Response:", data);
+
+            if (!res.ok) throw new Error(data.error || "Encryption failed");
+
+            const binary = Uint8Array.from(atob(data.encrypted), (c) => c.charCodeAt(0));
+            const encryptedBlob = new Blob([binary], { type: "text/plain" });
+
+            console.log("🔹 Step 2: Uploading to Cloudinary...");
+            const cloudinaryForm = new FormData();
+            cloudinaryForm.append("file", encryptedBlob, file.name + ".enc.txt");
+
+            const uploadRes = await fetch("/api/files/upload", { method: "POST", body: cloudinaryForm });
+            const uploadData = await uploadRes.json();
+
+            console.log("🔹 Cloudinary Response:", uploadData);
+
+            if (!uploadRes.ok) throw new Error(uploadData.error);
+
+            // ⭐ FIX — THIS LINE WAS MISSING
+            setDownloadUrl(uploadData.secure_url);
+
+            console.log("✔️ Download URL Set:", uploadData.secure_url);
+
+            console.log("🔹 Step 3: Creating DB document...");
+            const createRes = await fetch("/api/files", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    filename: file.name,
+                    cloudinaryFileUrl: uploadData.secure_url,
+                    cloudinaryId: uploadData.public_id,
+                    owner: user.id,
+                    allowedUsers: [],
+                }),
+            });
+
+            const createData = await createRes.json();
+            const fileId = createData._id;
+            console.log("FILE ID:", fileId);
+            setFileId(fileId);
+
+
+
+            if (!createRes.ok) throw new Error(createData.error);
+
+            toast.success("File encrypted & saved!");
+        } catch (err: any) {
+            console.error("❌ Encryption Error:", err);
+            toast.error(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    // Manual download
+    const handleDownload = () => {
+        if (!downloadUrl || !file) return;
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = `${file.name}.enc.txt`;
+        link.click();
+        toast.success("File downloaded!");
+    };
+
+    // Filter users for search
+    const filteredUsers = allUsers.filter(
+        (u) => u.userId !== user.id && u.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const handleAddUser = async (userId: string) => {
+    if (!fileId) return toast.error("File not created yet!");
+
+    setSendingUserId(userId); // ⭐ Only this user shows "Sending..."
+
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("key", key);
+        const res = await fetch(`/api/files/${fileId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId }),
+        });
 
-      const res = await fetch("/api/file/encrypt", {
-        method: "POST",
-        body: formData,
-      });
+        const data = await res.json();
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Encryption failed");
+        if (!res.ok) throw new Error(data.error);
 
-      const binary = Uint8Array.from(atob(data.encrypted), (c) => c.charCodeAt(0));
-      const blob = new Blob([binary], { type: "application/octet-stream" });
-      const url = URL.createObjectURL(blob);
-      setDownloadUrl(url);
+        toast.success("User added!");
 
-      toast.success("File encrypted successfully!");
+        setAllowedUsers((prev) => [...prev, userId]);
     } catch (err: any) {
-      toast.error(err.message || "Error encrypting file");
+        toast.error(err.message);
     } finally {
-      setLoading(false);
+        setSendingUserId(null);
     }
-  };
+};
 
-  const handleDownload = () => {
-    if (!downloadUrl || !file) return;
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.download = `${file.name}.enc.txt`;
-    link.click();
-    toast.success("File downloaded!");
-  };
 
-  return (
-    <div className="w-full flex justify-start items-center text-gray-100">
-      <Card className="w-full bg-[#1e293b] border border-gray-700 max-w-6xl text-gray-200 shadow-xl">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-accent text-2xl font-bold">
-            <Lock className="text-yellow-400" /> File Encryption
-          </CardTitle>
-        </CardHeader>
 
-        <CardContent className="space-y-6">
-          <div>
-            <label className="text-sm text-gray-400 mb-2 block">
-              Upload file (only .txt, .doc, .docx, .pdf under 1MB)
-            </label>
-            <Input
-              type="file"
-              accept=".txt,.pdf,.doc,.docx"
-              onChange={handleFileChange}
-              className="bg-[#0f172a] text-gray-200 file:text-gray-400 border-gray-700 focus-visible:ring-yellow-400 placeholder:text-white"
-            />
-          </div>
-
-          {file && (
-            <div className="flex max-w-[300px] items-center gap-3 p-4 bg-[#0f172a] rounded-lg border border-gray-700">
-              <FileIcon className="w-12 h-12 text-yellow-400" />
-              <div>
-                <p className="text-sm font-medium text-gray-200">{file.name}</p>
-                <p className="text-xs text-gray-400">
-                  {(file.size / 1024).toFixed(1)} KB
-                </p>
-              </div>
-            </div>
-          )}
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1">
-              <label className="text-sm text-gray-400 mb-2 block">
-                Encryption Key
-              </label>
-              <Input
-                value={key}
-                onChange={(e) => setKey(e.target.value)}
-                placeholder="Enter your key (min 8 chars)"
-                className="bg-[#0f172a] text-gray-200 py-5 border-gray-700 focus-visible:ring-yellow-400"
-              />
-            </div>
-            <Button
-              onClick={handleAutoGenerate}
-              variant="outline"
-              className="border-yellow-500 text-black transition-colors mt-7"
-            >
-              <KeyRound className="mr-2 h-4 w-4" /> Auto Generate
-            </Button>
-          </div>
-
-          <Button
-            onClick={handleEncrypt}
-            disabled={loading}
-            className={cn(
-              "w-full py-5 text-base bg-yellow-500 hover:bg-yellow-400 text-black font-medium transition",
-              loading && "opacity-70 cursor-not-allowed"
-            )}
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="h-5 w-5 animate-spin" /> Encrypting...
-              </span>
-            ) : (
-              "Encrypt File"
-            )}
-          </Button>
-
-          {downloadUrl && (
-            <Button
-              onClick={handleDownload}
-              variant="outline"
-              className="w-full mt-3 border-yellow-500 bg-yellow-500/10 hover:bg-yellow-600/10"
-            >
-              <Download className="h-4 w-4 mr-2" /> Download Encrypted File
-            </Button>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
+    return (
+        <div className="w-full flex justify-start items-center text-gray-100">
+            <Card className="w-full bg-[#1e293b] border border-gray-700 max-w-6xl text-gray-200 shadow-xl">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-accent text-2xl font-bold">
+                        <Lock className="text-yellow-400" /> File Encryption
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <FileUpload file={file} setFile={setFile} />
+                    <KeyInput keyValue={key} setKey={setKey} onAutoGenerate={handleAutoGenerate} />
+                    <EncryptActions
+                        loading={loading}
+                        onEncrypt={handleEncrypt}
+                        onDownload={handleDownload}
+                        downloadUrl={downloadUrl}
+                    />
+                    {downloadUrl && (
+                        <UsersList
+                            users={filteredUsers}
+                            searchQuery={searchQuery}
+                            setSearchQuery={setSearchQuery}
+                            sendingUserId={sendingUserId}
+                            allowedUsers={allowedUsers}
+                            onAddUser={handleAddUser}
+                        />
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+    );
 }

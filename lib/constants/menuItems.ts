@@ -16,7 +16,10 @@ import {
   Users,
   ShieldAlert,
   FileKey2,
-  UserRoundPen
+  UserRoundPen,
+  History,
+  Share,
+  ArrowDownLeft
 } from "lucide-react";
 
 export const menuItems = [
@@ -49,6 +52,8 @@ export const NAV_DATA = [
           { title: "Decryption", url: "/dashboard/file-decryption", icon: Users },
         ],
       },
+      { title: "Shared Files", url: "/dashboard/shared-files", icon: ArrowDownLeft },
+      { title: "Encryption History", url: "/dashboard/encryption-history", icon: History },
       { title: "Profile", url: "/dashboard/profile", icon: UserRoundPen },
     ],
   },

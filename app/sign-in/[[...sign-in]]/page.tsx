@@ -5,7 +5,7 @@ export default function Page() {
       <div
       className="flex min-h-screen py-5 justify-center items-center bg-cover bg-center relative"
       style={{
-        backgroundImage: "url('/assets/encrypt1.png')", // 👈 place your image in /public/assets/
+        backgroundImage: "url('/assets/encrypt1.png')", 
       }}
     >
       {/* Overlay */}
@@ -13,7 +13,7 @@ export default function Page() {
 
       {/* Clerk SignUp form */}
       <div className="relative z-10">
-        <SignIn />
+        <SignIn  redirectUrl="/onboarding"/>
       </div>
     </div>
   )

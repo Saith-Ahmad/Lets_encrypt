@@ -13,7 +13,7 @@ export default function Page() {
 
       {/* Clerk SignUp form */}
       <div className="relative z-10">
-        <SignUp />
+        <SignUp  redirectUrl="/onboarding"/>
       </div>
     </div>
   );
