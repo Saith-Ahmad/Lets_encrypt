@@ -161,7 +161,7 @@ export default function EncryptionHistoryPage() {
               <a
                 href={downloadUrl}
                 download={popupFile.filename}
-                className="w-full block text-center bg-[#333735] border-accent border-1 rounded-sm text-white py-2 hover:scale-[0.97] transition-all mt-4"
+                className="w-full block text-center bg-[#333735] border-accent border-1 rounded-sm text-white py-2 hover:scale-[0.98] transition-all mt-4"
               >
                 Download Decrypted File
               </a>

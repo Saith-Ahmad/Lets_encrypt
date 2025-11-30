@@ -153,7 +153,7 @@ export default function Header() {
 
               {/* CTA Button */}
               <motion.div variants={item}>
-                <a href="/dashboard">
+                <a href="/onbooarding">
                   <Button
                     size="sm"
                     variant="outline"
@@ -211,7 +211,7 @@ export default function Header() {
                       </nav>
 
                       {/* CTA */}
-                      <Link href="/dashboard">
+                      <Link href="/onboarding">
                         <Button className="w-full rounded-full bg-primary hover:bg-primary-hover">
                           Get Started
                         </Button>

@@ -58,7 +58,7 @@ export default function Hero() {
             encryption. Privacy is not an option. It’s your right.
           </motion.p>
 
-          <Link href={'/dashboard'}>
+          <Link href={'/onboarding'}>
             <motion.div>
               <Button
                 size={"sm"}
