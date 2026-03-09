@@ -153,7 +153,7 @@ export default function Header() {
 
               {/* CTA Button */}
               <motion.div variants={item}>
-                <a href="/onbooarding">
+                <a href="/onboarding">
                   <Button
                     size="sm"
                     variant="outline"
